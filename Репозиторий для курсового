@@ -1,0 +1,151 @@
+namespace Products
+{
+     class Program
+    {
+        static void Main(string[] args)
+        {
+            Storage storage = new Storage();
+            bool running = true;
+
+            while (running)
+            {
+                Console.WriteLine("1. Add Product");
+                Console.WriteLine("2. Add Supply");
+                Console.WriteLine("3. View Products");
+                Console.WriteLine("4. View Supplies");
+                Console.WriteLine("5. Exit");
+                Console.Write("Choose an option: ");
+                var choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Console.Write("Enter product name: ");
+                        var name = Console.ReadLine();
+                        Console.Write("Enter product price: ");
+                        var price = decimal.Parse(Console.ReadLine());
+                        Console.Write("Enter product quantity: ");
+                        var quantity = int.Parse(Console.ReadLine());
+                        storage.AddProduct(name, price, quantity);
+                        Console.WriteLine("Product added.");
+                        break;
+
+                    case "2":
+                        Console.Write("Enter product ID for supply: ");
+                        var productId = int.Parse(Console.ReadLine());
+                        Console.Write("Enter quantity supplied: ");
+                        var quantitySupplied = int.Parse(Console.ReadLine());
+                        storage.AddSupply(productId, quantitySupplied);
+                        Console.WriteLine("Supply added.");
+                        break;
+
+                    case "3":
+                        Console.WriteLine("Products:");
+                        foreach (var product in storage.GetProducts())
+                        {
+                            Console.WriteLine(product);
+                        }
+                        break;
+
+                    case "4":
+                        Console.WriteLine("Supplies:");
+                        foreach (var supply in storage.GetSupplies())
+                        {
+                            Console.WriteLine(supply);
+                        }
+                        break;
+
+                    case "5":
+                        running = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid option. Please try again.");
+                        break;
+                }
+
+                Console.WriteLine();
+            }
+namespace Products
+{
+    public class Supply
+    {
+        public int Id { get; set; }
+        public int ProductId { get; set; }
+        public int QuantitySupplied { get; set; }
+        public DateTime SupplyDate { get; set; }
+
+        public override string ToString()
+        {
+            return $"Supply ID: {Id}, Product ID: {ProductId}, Quantity: {QuantitySupplied}, Date: {SupplyDate}";
+        }
+    }
+}
+        
+    
+
+namespace Products
+{
+    public class Products
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Id}: {Name} - {Price:C} (Quantity: {Quantity})";
+        }
+    }
+}
+namespace Products
+{
+    public class Storage
+    {
+        private List<Product> products = new List<Product>();
+        private List<Supply> supplies = new List<Supply>();
+        private int productIdCounter = 1;
+        private int supplyIdCounter = 1;
+
+        public void AddProduct(string name, decimal price, int quantity)
+        {
+            var product = new Product
+            {
+                Id = productIdCounter++,
+                Name = name,
+                Price = price,
+                Quantity = quantity
+            };
+            products.Add(product);
+        }
+
+        public void AddSupply(int productId, int quantitySupplied)
+        {
+            var supply = new Supply
+            {
+                Id = supplyIdCounter++,
+                ProductId = productId,
+                QuantitySupplied = quantitySupplied,
+                SupplyDate = DateTime.Now
+            };
+            supplies.Add(supply);
+
+            var product = products.FirstOrDefault(p => p.Id == productId);
+            if (product != null)
+            {
+                product.Quantity += quantitySupplied;
+            }
+        }
+
+        public List<Product> GetProducts()
+        {
+            return products;
+        }
+
+        public List<Supply> GetSupplies()
+        {
+            return supplies;
+        }
+    }
+}
